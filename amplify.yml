@@ -5,6 +5,7 @@ applications:
       phases:
         preBuild:
           commands:
+            - npm install -g pnpm
             - pnpm install
         build:
           commands:
@@ -15,4 +16,5 @@ applications:
           - '**/*'
       cache:
         paths:
+          - apps/web/node_modules/**/*
           - node_modules/**/*
