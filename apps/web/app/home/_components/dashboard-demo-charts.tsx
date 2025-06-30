@@ -612,6 +612,14 @@ export function VisitorsChart() {
     },
   } satisfies ChartConfig;
 
+  const total = useMemo(
+    () => ({
+      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
+      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
+    }),
+    [chartData],
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -815,7 +823,7 @@ export function PageViewsChart() {
       desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
       mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
     }),
-    [],
+    [chartData],
   );
 
   return (

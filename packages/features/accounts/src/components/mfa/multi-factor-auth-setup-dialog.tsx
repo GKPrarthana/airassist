@@ -10,6 +10,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import Image from 'next/image';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { useFactorsMutationKey } from '@kit/supabase/hooks/use-user-factors-mutation-key';
@@ -409,7 +410,7 @@ function FactorNameForm(
 
 function QrImage({ src }: { src: string }) {
   return (
-    <img
+    <Image
       alt={'QR Code'}
       src={src}
       width={160}

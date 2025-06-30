@@ -4,7 +4,6 @@ import {
 } from '@kit/ui/bordered-navigation-menu';
 
 import { AppLogo } from '~/components/app-logo';
-import { ProfileAccountDropdownContainer } from '~/components/personal-account-dropdown-container';
 import { navigationConfig } from '~/config/navigation.config';
 
 export function HomeMenuNavigation() {
@@ -28,22 +27,14 @@ export function HomeMenuNavigation() {
   }, []);
 
   return (
-    <div className={'flex w-full flex-1 justify-between'}>
-      <div className={'flex items-center space-x-8'}>
-        <AppLogo />
+    <div className={'flex w-full flex-1 items-center space-x-8'}>
+      <AppLogo />
 
-        <BorderedNavigationMenu>
-          {routes.map((route) => (
-            <BorderedNavigationMenuItem {...route} key={route.path} />
-          ))}
-        </BorderedNavigationMenu>
-      </div>
-
-      <div className={'flex justify-end space-x-2.5'}>
-        <div>
-          <ProfileAccountDropdownContainer showProfileName={false} />
-        </div>
-      </div>
+      <BorderedNavigationMenu>
+        {routes.map((route) => (
+          <BorderedNavigationMenuItem {...route} key={route.path} />
+        ))}
+      </BorderedNavigationMenu>
     </div>
   );
 }

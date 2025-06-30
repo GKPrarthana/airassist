@@ -1,89 +1,38 @@
-import { use } from 'react';
+'use client';
 
-import { cookies } from 'next/headers';
-
-import {
-  Page,
-  PageLayoutStyle,
-  PageMobileNavigation,
-  PageNavigation,
-} from '@kit/ui/page';
-import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
-
-import { AppLogo } from '~/components/app-logo';
-import { navigationConfig } from '~/config/navigation.config';
-import { withI18n } from '~/lib/i18n/with-i18n';
-import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
-
-// home imports
 import { HomeMenuNavigation } from './_components/home-menu-navigation';
-import { HomeMobileNavigation } from './_components/home-mobile-navigation';
-import { HomeSidebar } from './_components/home-sidebar';
+import { AppLogo } from '../../components/app-logo';
+import { CognitoAccountDropdown } from '../../components/cognito-account-dropdown';
+import { useSignOut } from '../../hooks/use-sign-out';
 
 function HomeLayout({ children }: React.PropsWithChildren) {
-  const style = use(getLayoutStyle());
-
-  if (style === 'sidebar') {
-    return <SidebarLayout>{children}</SidebarLayout>;
-  }
-
-  return <HeaderLayout>{children}</HeaderLayout>;
-}
-
-export default withI18n(HomeLayout);
-
-function SidebarLayout({ children }: React.PropsWithChildren) {
-  const sidebarMinimized = navigationConfig.sidebarCollapsed;
-  const [user] = use(Promise.all([requireUserInServerComponent()]));
+  const signOut = useSignOut();
 
   return (
-    <SidebarProvider defaultOpen={sidebarMinimized}>
-      <Page style={'sidebar'}>
-        <PageNavigation>
-          <HomeSidebar user={user} />
-        </PageNavigation>
+    <div className={'flex h-full flex-col'}>
+      <div className="flex flex-1">
+        <div className={'hidden h-full w-[18rem] flex-col space-y-4 border-r md:flex'}>
+          <div className={'flex items-center space-x-2 border-b px-4 py-2.5'}>
+            <AppLogo />
+          </div>
 
-        <PageMobileNavigation className={'flex items-center justify-between'}>
-          <MobileNavigation />
-        </PageMobileNavigation>
+          <div className={'px-4'}>
+            <HomeMenuNavigation />
+          </div>
+        </div>
 
-        {children}
-      </Page>
-    </SidebarProvider>
+        <div className="flex-1">
+          <div className={'flex h-16 items-center justify-end border-b'}>
+            <div className={'mr-4 flex items-center space-x-4'}>
+              <CognitoAccountDropdown onSignOut={signOut} />
+            </div>
+          </div>
+
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function HeaderLayout({ children }: React.PropsWithChildren) {
-  return (
-    <Page style={'header'}>
-      <PageNavigation>
-        <HomeMenuNavigation />
-      </PageNavigation>
-
-      <PageMobileNavigation className={'flex items-center justify-between'}>
-        <MobileNavigation />
-      </PageMobileNavigation>
-
-      {children}
-    </Page>
-  );
-}
-
-function MobileNavigation() {
-  return (
-    <>
-      <AppLogo />
-
-      <HomeMobileNavigation />
-    </>
-  );
-}
-
-async function getLayoutStyle() {
-  const cookieStore = await cookies();
-
-  return (
-    (cookieStore.get('layout-style')?.value as PageLayoutStyle) ??
-    navigationConfig.style
-  );
-}
+export default HomeLayout;

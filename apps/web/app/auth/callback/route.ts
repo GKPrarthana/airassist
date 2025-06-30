@@ -56,16 +56,14 @@ export async function GET(request: NextRequest) {
     // Create a response to set cookies and redirect
     const nextResponse = NextResponse.redirect(new URL('/home', request.url));
 
-    // Set tokens in secure, httpOnly cookies
+    // Set tokens in cookies. Cannot be httpOnly, as the client needs to clear them on sign-out.
     nextResponse.cookies.set('id_token', id_token, {
-      httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
       maxAge: expires_in,
       path: '/',
     });
 
     nextResponse.cookies.set('access_token', access_token, {
-      httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
       maxAge: expires_in,
       path: '/',
@@ -73,7 +71,6 @@ export async function GET(request: NextRequest) {
 
     if (refresh_token) {
       nextResponse.cookies.set('refresh_token', refresh_token, {
-        httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         path: '/',
       });
