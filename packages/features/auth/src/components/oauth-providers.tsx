@@ -66,48 +66,31 @@ export function OauthProviders(props: {
       <div className={'flex w-full flex-1 flex-col space-y-3'}>
         <div className={'flex-col space-y-2'}>
           {enabledProviders.map((provider) => {
-            return (
-              <AuthProviderButton
-                key={provider}
-                providerId={provider}
-                onClick={() => {
-                  const origin = window.location.origin;
-                  const queryParams = new URLSearchParams();
-
-                  if (props.paths.returnPath) {
-                    queryParams.set('next', props.paths.returnPath);
-                  }
-
-                  const redirectPath = [
-                    props.paths.callback,
-                    queryParams.toString(),
-                  ].join('?');
-
-                  const redirectTo = [origin, redirectPath].join('');
-                  const scopesOpts = OAUTH_SCOPES[provider] ?? {};
-
-                  const credentials = {
-                    provider,
-                    options: {
-                      shouldCreateUser: props.shouldCreateUser,
-                      redirectTo,
-                      ...scopesOpts,
-                    },
-                  };
-
-                  return onSignInWithProvider(() =>
-                    signInWithProviderMutation.mutateAsync(credentials),
-                  );
-                }}
-              >
-                <Trans
-                  i18nKey={'auth:signInWithProvider'}
-                  values={{
-                    provider: getProviderName(provider),
+            // Custom logic for Google via Cognito
+            if (provider === 'google') {
+              return (
+                <AuthProviderButton
+                  key={provider}
+                  providerId={provider}
+                  onClick={() => {
+                    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
+                    const clientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_WEB_CLIENT_ID || '';
+                    const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_SIGN_IN || '';
+                    const loginUrl = `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=Google&scope=openid+profile+email`;
+                    window.location.href = loginUrl;
                   }}
-                />
-              </AuthProviderButton>
-            );
+                >
+                  <Trans
+                    i18nKey={'auth:signInWithProvider'}
+                    values={{
+                      provider: getProviderName(provider),
+                    }}
+                  />
+                </AuthProviderButton>
+              );
+            }
+            // Optionally, hide other providers or keep default logic
+            return null;
           })}
         </div>
 
